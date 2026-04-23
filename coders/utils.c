@@ -9,12 +9,15 @@ long    get_timestamp_ms(void)
     return (tv.tv_sec * 1000 + tv.tv_usec / 1000);
 }
 
-void    safe_usleep(long ms)
+void safe_usleep(long ms, t_ctx *ctx)
 {
-    long    start = get_timestamp_ms();
+    long start = get_timestamp_ms();
 
-    while (get_timestamp_ms() - start < ms)
+    while (!simulation_stopped(ctx) &&
+           get_timestamp_ms() - start < ms)
+    {
         usleep(100);
+    }
 }
 
 void    log_action(t_ctx *ctx, int id, const char *msg)

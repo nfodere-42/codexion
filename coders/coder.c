@@ -3,7 +3,7 @@
 #include "../include/dongle.h"
 #include "../include/utils.h"
 
-static int  simulation_stopped(t_ctx *ctx)
+int  simulation_stopped(t_ctx *ctx)
 {
     int stopped;
 
@@ -11,14 +11,6 @@ static int  simulation_stopped(t_ctx *ctx)
     stopped = ctx->stop_simulation;
     pthread_mutex_unlock(&ctx->sim_mutex);
     return (stopped);
-}
-
-void safe_usleep(long ms, t_ctx *ctx)
-{
-    long start = get_timestamp_ms();
-
-    while (!simulation_stopped(ctx) && get_timestamp_ms() - start < ms)
-        usleep(100);
 }
 
 static void do_compile(t_coder *c)
