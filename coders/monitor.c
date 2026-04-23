@@ -20,6 +20,13 @@ static void stop_simulation(t_ctx *ctx)
     pthread_mutex_lock(&ctx->sim_mutex);
     ctx->stop_simulation = 1;
     pthread_mutex_unlock(&ctx->sim_mutex);
+
+    for (int i = 0; i < ctx->cfg.number_of_coders; i++)
+    {
+        pthread_mutex_lock(&ctx->dongles[i].mutex);
+        pthread_cond_broadcast(&ctx->dongles[i].cond);
+        pthread_mutex_unlock(&ctx->dongles[i].mutex);
+    }
 }
 
 static int  check_burnout(t_ctx *ctx, t_coder *c)

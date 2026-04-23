@@ -13,30 +13,49 @@ static int  simulation_stopped(t_ctx *ctx)
     return (stopped);
 }
 
+void safe_usleep(long ms, t_ctx *ctx)
+{
+    long start = get_timestamp_ms();
+
+    while (!simulation_stopped(ctx) && get_timestamp_ms() - start < ms)
+        usleep(100);
+}
+
 static void do_compile(t_coder *c)
 {
     t_ctx *ctx = c->ctx;
+
+    if (simulation_stopped(ctx))
+        return;
     log_action(ctx, c->id, "is compiling");
     c->state = STATE_COMPILING;
     c->last_compile_start = get_timestamp_ms();
-    safe_usleep(ctx->cfg.time_to_compile);
+    safe_usleep(ctx->cfg.time_to_compile, ctx);
+    if (simulation_stopped(ctx))
+        return;
     c->compile_count++;
 }
 
 static void do_debug(t_coder *c)
 {
     t_ctx *ctx = c->ctx;
+
+    if (simulation_stopped(ctx))
+        return;
     log_action(ctx, c->id, "is debugging");
     c->state = STATE_DEBUGGING;
-    safe_usleep(ctx->cfg.time_to_debug);
+    safe_usleep(ctx->cfg.time_to_debug, ctx);
 }
 
 static void do_refactor(t_coder *c)
 {
     t_ctx *ctx = c->ctx;
+
+    if (simulation_stopped(ctx))
+        return;
     log_action(ctx, c->id, "is refactoring");
     c->state = STATE_REFACTORING;
-    safe_usleep(ctx->cfg.time_to_refactor);
+    safe_usleep(ctx->cfg.time_to_refactor, ctx);
 }
 
 void    *coder_thread(void *arg)
@@ -44,17 +63,26 @@ void    *coder_thread(void *arg)
     t_coder *c = arg;
     t_ctx   *ctx = c->ctx;
 
-    while (!simulation_stopped(ctx))
-    {
-        if (c->compile_count >= ctx->cfg.number_of_compiles_required)
-            break;
-        if (take_dongles(c))
-            break;
-        do_compile(c);
-        release_dongles(c);
-        do_debug(c);
-        do_refactor(c);
-    }
+	while (!simulation_stopped(ctx))
+	{
+	    if (c->compile_count >= ctx->cfg.number_of_compiles_required)
+		break;
+	    if (take_dongles(c))
+		break;
+	    if (simulation_stopped(ctx))
+	    {
+		release_dongles(c);
+		break;
+	    }
+	    do_compile(c);
+	    release_dongles(c);
+	    if (simulation_stopped(ctx))
+		break;
+	    do_debug(c);
+	    if (simulation_stopped(ctx))
+		break;
+	    do_refactor(c);
+	}
     return (NULL);
 }
 
