@@ -1,7 +1,7 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   utils.c                                            :+:      :+:    :+:   */
+/*   scheduler_aux.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: nfodere- <>                                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
@@ -10,26 +10,17 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../include/codexion.h"
-#include "../include/utils.h"
+#include "../include/scheduler.h"
+#include "../include/heap.h"
 #include <unistd.h>
 
-long	get_timestamp_ms(void)
+int	compare_priorities(long a, long b)
 {
-	struct timeval	tv;
-
-	gettimeofday(&tv, NULL);
-	return (tv.tv_sec * 1000 + tv.tv_usec / 1000);
-}
-
-void	safe_usleep(long ms, t_ctx *ctx)
-{
-	long	start;
-
-	start = get_timestamp_ms();
-	while (!simulation_stopped(ctx)
-		&& get_timestamp_ms() - start < ms)
-		usleep(100);
+	if (a < b)
+		return (-1);
+	if (a > b)
+		return (1);
+	return (0);
 }
 
 static void	write_number(long n)
@@ -59,17 +50,22 @@ static void	write_number(long n)
 	write(1, &buf[i + 1], 31 - i - 1);
 }
 
-void	log_action(t_ctx *ctx, int id, const char *msg)
+void	scheduler_print_queue(t_scheduler *s)
 {
-	long	ts;
+	int	i;
 
-	pthread_mutex_lock(&ctx->log_mutex);
-	ts = get_timestamp_ms() - ctx->start_time;
-	write_number(ts);
-	write(1, " ", 1);
-	write_number(id);
-	write(1, " ", 1);
-	write(1, msg, strlen(msg));
-	write(1, "\n", 1);
-	pthread_mutex_unlock(&ctx->log_mutex);
+	pthread_mutex_lock(&s->mutex);
+	i = 0;
+	while (i < s->queue.size)
+	{
+		write(1, "Node ", 5);
+		write_number(i);
+		write(1, ": coder ", 8);
+		write_number(s->queue.nodes[i].coder->id);
+		write(1, ", priority ", 11);
+		write_number(s->queue.nodes[i].priority);
+		write(1, "\n", 1);
+		i++;
+	}
+	pthread_mutex_unlock(&s->mutex);
 }

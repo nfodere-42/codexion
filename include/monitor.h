@@ -1,8 +1,20 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   monitor.h                                          :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: nfodere- <>                                +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/09/22 14:21:55 by nfodere-          #+#    #+#             */
+/*   Updated: 2025/09/22 14:22:07 by nfodere-         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #ifndef MONITOR_H
-#define MONITOR_H
+# define MONITOR_H
 
-#include "codexion.h"
+# include "codexion.h"
 
-void    *monitor_thread(void *arg);
+void	*monitor_thread(void *arg);
 
 #endif

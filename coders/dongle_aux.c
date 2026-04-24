@@ -1,7 +1,7 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   utils.h                                           :+:      :+:    :+:   */
+/*   dongle_aux.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: nfodere- <>                                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
@@ -10,14 +10,11 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef UTILS_H
-# define UTILS_H
+#include "../include/dongle.h"
+#include <pthread.h>
 
-# include "codexion.h"
-
-void	safe_usleep(long ms, t_ctx *ctx);
-void	log_action(t_ctx *ctx, int id, const char *msg);
-long	get_timestamp_ms(void);
-int		simulation_stopped(t_ctx *ctx);
-
-#endif
+void	destroy_dongle(t_dongle *d)
+{
+	pthread_mutex_destroy(&d->mutex);
+	pthread_cond_destroy(&d->cond);
+}

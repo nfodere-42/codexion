@@ -1,9 +1,21 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   coder.h                                            :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: nfodere- <>                                +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/09/22 14:21:55 by nfodere-          #+#    #+#             */
+/*   Updated: 2025/09/22 14:22:07 by nfodere-         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #ifndef CODER_H
-#define CODER_H
+# define CODER_H
 
-#include "codexion.h"
+# include "codexion.h"
 
-void    *coder_thread(void *arg);
-int     init_coders(t_ctx *ctx);
+void	*coder_thread(void *arg);
+int		init_coders(t_ctx *ctx);
 
 #endif

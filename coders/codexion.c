@@ -1,38 +1,21 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   codexion.c                                         :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: nfodere- <>                                +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/09/22 14:21:55 by nfodere-          #+#    #+#             */
+/*   Updated: 2025/09/22 14:22:07 by nfodere-         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "../include/codexion.h"
 #include "../include/coder.h"
 #include "../include/dongle.h"
 #include "../include/monitor.h"
 #include "../include/utils.h"
 #include "../include/scheduler.h"
-
-static int	parse_scheduler(const char *s, t_scheduler_type *out)
-{
-	if (strcmp(s, "fifo") == 0)
-		*out = SCH_FIFO;
-	else if (strcmp(s, "edf") == 0)
-		*out = SCH_EDF;
-	else
-		return (1);
-	return (0);
-}
-
-static int	parse_args(int ac, char **av, t_config *cfg)
-{
-	if (ac != 9)
-		return (1);
-	cfg->number_of_coders = atoi(av[1]);
-	cfg->time_to_burnout = atol(av[2]);
-	cfg->time_to_compile = atol(av[3]);
-	cfg->time_to_debug = atol(av[4]);
-	cfg->time_to_refactor = atol(av[5]);
-	cfg->number_of_compiles_required = atoi(av[6]);
-	cfg->dongle_cooldown = atol(av[7]);
-	if (parse_scheduler(av[8], &cfg->scheduler))
-		return (1);
-	if (cfg->number_of_coders <= 0)
-		return (1);
-	return (0);
-}
 
 static int	init_ctx(t_ctx *ctx, t_config *cfg)
 {
@@ -68,15 +51,27 @@ static void	start_threads(t_ctx *ctx)
 
 static void	join_threads(t_ctx *ctx)
 {
-	for (int i = 0; i < ctx->cfg.number_of_coders; i++)
+	int	i;
+
+	i = 0;
+	while (i < ctx->cfg.number_of_coders)
+	{
 		pthread_join(ctx->coders[i].thread, NULL);
+		i++;
+	}
 	pthread_join(ctx->monitor_thread, NULL);
 }
 
-static void free_ctx(t_ctx *ctx)
+static void	free_ctx(t_ctx *ctx)
 {
-	for (int i = 0; i < ctx->cfg.number_of_coders; i++)
+	int	i;
+
+	i = 0;
+	while (i < ctx->cfg.number_of_coders)
+	{
 		destroy_dongle(&ctx->dongles[i]);
+		i++;
+	}
 	pthread_mutex_destroy(&ctx->log_mutex);
 	pthread_mutex_destroy(&ctx->sim_mutex);
 	free(ctx->coders);

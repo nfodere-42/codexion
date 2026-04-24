@@ -1,7 +1,7 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   utils.h                                           :+:      :+:    :+:   */
+/*   heap_aux.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: nfodere- <>                                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
@@ -10,14 +10,29 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef UTILS_H
-# define UTILS_H
+#include "../include/heap.h"
+#include <stdlib.h>
 
-# include "codexion.h"
+void	swap_nodes(t_heap_node *a, t_heap_node *b)
+{
+	t_heap_node	tmp;
 
-void	safe_usleep(long ms, t_ctx *ctx);
-void	log_action(t_ctx *ctx, int id, const char *msg);
-long	get_timestamp_ms(void);
-int		simulation_stopped(t_ctx *ctx);
+	tmp = *a;
+	*a = *b;
+	*b = tmp;
+}
 
-#endif
+void	heap_init(t_heap *h)
+{
+	h->size = 0;
+	h->capacity = 16;
+	h->nodes = malloc(sizeof(t_heap_node) * h->capacity);
+}
+
+void	heap_destroy(t_heap *h)
+{
+	free(h->nodes);
+	h->nodes = NULL;
+	h->size = 0;
+	h->capacity = 0;
+}
