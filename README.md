@@ -2,6 +2,8 @@
 
 # Codexion
 
+<img src="img/logo_codexion.png" width="256" height="auto">
+
 Codexion is a concurrency simulation inspired by the classical Dining Philosophers
 problem, but adapted to a modern programming environment.  
 Several coders share a limited number of USB dongles required to compile quantum
